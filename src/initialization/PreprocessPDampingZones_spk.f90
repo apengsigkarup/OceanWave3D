@@ -78,9 +78,14 @@ Do i=1,NDampZones
       IWK = PDampZones_csr(i)%Lop%nnz + ifil + 1
       droptol = 0.000
       workspaceSize =(nd+3)*(1+2) +1 
-      ALLOCATE(PDampZones_csr(i)%Lop%alu(IWK),PDampZones_csr(i)%Lop%jlu(IWK),PDampZones_csr(i)%Lop%ju(nd),PDampZones_csr(i)%Lop%w(workspaceSize),PDampZones_csr(i)%Lop%jw(3*nd))
+      ALLOCATE(PDampZones_csr(i)%Lop%alu(IWK),PDampZones_csr(i)%Lop%jlu(IWK),&
+      PDampZones_csr(i)%Lop%ju(nd),PDampZones_csr(i)%Lop%w(workspaceSize),&
+      PDampZones_csr(i)%Lop%jw(3*nd))
 
-      CALL ILUT(nd,PDampZones_csr(i)%Lop%val,PDampZones_csr(i)%Lop%icn,PDampZones_csr(i)%Lop%irn,ifil,droptol,PDampZones_csr(i)%Lop%alu,PDampZones_csr(i)%Lop%jlu,PDampZones_csr(i)%Lop%ju,IWK,PDampZones_csr(i)%Lop%w,PDampZones_csr(i)%Lop%jw,ierrSPK)
+      CALL ILUT(nd,PDampZones_csr(i)%Lop%val,PDampZones_csr(i)%Lop%icn,&
+      PDampZones_csr(i)%Lop%irn,ifil,droptol,PDampZones_csr(i)%Lop%alu,&
+      PDampZones_csr(i)%Lop%jlu,PDampZones_csr(i)%Lop%ju,IWK,&
+      PDampZones_csr(i)%Lop%w,PDampZones_csr(i)%Lop%jw,ierrSPK)
       print *, "ierrSPK ", ierrSPK
       
    END If

@@ -1,0 +1,37 @@
+To use docker for compiling the OceanWave3D binary on your local machine, do the following steps.
+
+First install Docker desktop, cf. https://docs.docker.com/get-docker/. Run Docker on your local machine.
+
+Make sure to have the following thirdparty library zip/tar files located in the same directory as the Dockerfile
+- Harwell.tar.gz 
+- lapack-3.12.0.tar.gz ( find most recent here: https://www.netlib.org/lapack/ )
+- SPARSKIT2.tar.gz  ( find repos here https://github.com/efocht/SPARSKIT2 )
+
+The Dockerfile is configured to create a linux image, unpack and compile the above libraries, add them to the path, and then compile OceanWwave3D from github.
+
+>> docker build -t docker_oceanwave3d .
+
+Then the image can be run as a container with a bind mount to the directory inside the container
+
+>> docker run -v $(pwd):/target -it docker_oceanwave3d /bin/bash
+
+>> docker run -v /path/to/local/dir:/usr/src/build -it docker_oceanwave3d
+
+or without bind mount
+>> docker run -it docker_oceanwave3d
+
+# List running containers to find the container ID or name
+docker ps
+
+# Start an interactive shell session in the container
+# Replace `container_id_or_name` with the actual container ID or name
+docker exec -it docker_oceanwave3d /bin/bash
+
+# If the container does not have Bash, you can try using sh
+docker exec -it container_id_or_name /bin/sh
+
+
+
+docker build --credential-specifier /usr/local/bin/docker-credential-osxkeychain -t docker_oceanwave3d .
+
+
