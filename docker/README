@@ -7,39 +7,32 @@ Make sure to have the following thirdparty library zip/tar files located in the 
 - lapack-3.12.0.tar.gz ( find most recent here: https://www.netlib.org/lapack/ )
 - SPARSKIT2.tar.gz  ( find repos here https://github.com/efocht/SPARSKIT2 )
 
-The Dockerfile is configured to create a linux image, unpack and compile the above libraries, add them to the path, and then compile OceanWwave3D from github.
+The Dockerfile is configured to create a linux image, unpack and compile the above libraries, add them to the path, and then compile OceanWwave3D from github withih the container.
 
 >> docker build -t docker_oceanwave3d .
 
-and build with cache clean, e.g. if some code was updated, 
+and build with cache clean, e.g. if some code was updated and the image needs to be rebuild, 
 
 >> docker build --no-cache -t docker_oceanwave3d .
 
-then to see the images
+then to see the portable container image that is successfully created on your machine to confirm
 
 >> docker images
 
-use the repository name or the image id to run a docker container
+use the repository name or the image id to run a docker container from the command line. First, copy one of the example files to the directory where you want to run the OceanWave3D binary via the docker container
 
->> docker run -v /path/to/local/dir:/usr/src/build -it docker_oceanwave3d
+For example, if you are in the docker/ directory then copy one of the example files (you may modify it if needed)
+>> cp ../examples/inputfiles/OceanWave3D.inp.Whalin OceanWave3D.inp
 
-Then the image can be run as a container with a bind mount to the directory inside the container
+To make the script an executable you can do this from the command line
 
->> docker run -v $(pwd):/target -it docker_oceanwave3d /bin/bash
+>> chmod +x run_oceanwave3d.sh
 
-or without bind mount
->> docker run -it docker_oceanwave3d
+and then run the OceanWave3D binary via the script
 
-to run the code locally as if it is an executable
+>> ./run_oceanwave3d.sh OceanWave3D.inp
 
-(base) Allans-MacBook-Pro-2:docker apek$ code run_oceanwave3d.sh
-(base) Allans-MacBook-Pro-2:docker apek$ chmod +x run_oceanwave.sh
-chmod: run_oceanwave.sh: No such file or directory
-(base) Allans-MacBook-Pro-2:docker apek$ chmod +x run_oceanwave3d.sh
-(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave.sh
--bash: ./run_oceanwave.sh: No such file or directory
-(base) Allans-MacBook-Pro-2:docker apek$ 
-(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave3d.sh
+after which you should see output such as 
 
 *********************************************************
 ***                                                   ***
@@ -73,43 +66,94 @@ chmod: run_oceanwave.sh: No such file or directory
 
    Input file with model parameters : OceanWave3D.inp                         
 
-   Header title.................... : 
+   Header title.................... : Whalins experiment (Release Version)                                    
 
-At line 22 of file src/IO/ReadInputFileParameters.f90 (unit = 7, file = 'OceanWave3D.inp')
-Fortran runtime error: Sequential READ or WRITE not allowed after EOF marker, possibly use REWIND or BACKSPACE
+   Bathymetry                         : Predefined (in setup for IC)
+   (Nx,Ny,Nz)=(  257,   17,    6)
+   Size of dx: .1367E+00
+   Size of dy: .1905E+00
 
-Error termination. Backtrace:
-#0  0xffffae3cbeeb
-#1  0xffffae3ccc33
-#2  0xffffae3cd7b3
-#3  0xffffae4c7ee7
-#4  0xaaaab171174b
-#5  0xaaaab17161c3
-#6  0xaaaab1715bd3
-#7  0xaaaab1672b1f
-#8  0xffffae18de0f
-#9  0xaaaab1672b5f
-(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave3d.sh
+   Uneven node-distribution in Z
+   Ghost point layer included below bottom.
+
+   Half-width stencils: (alpha,beta,gamma)=( 3, 3, 3)
+   Half-width stencils: (alpha,beta,gamma)=( 1, 1, 1) (Preconditioner)
+  
+ Starting time for this run is    0.0000000000000000     
+   Number of time steps chosen:     1283
+   Size of time increment: .3900E-01
+    Time-integration method: Classical Runge-Kutta fourth order
+   ** No input value for rho, using 1000.
+    GMRES method is chosen.
+    Strategy: GMRES + MG-RB-F(           1 ,           1 )
+    Tolerance levels user-defined. RelTol =    9.9999999999999995E-007  and AbsTol =    1.0000000000000000E-004
+ 
+ Kinematics output requested in            1  file(s) named "Kinematics_**.bin".
+  
+   Fully nonlinear model is employed.
+
+ No free-surface pressure term is being applied.  
+
+  
+ No breaking model line found, the feature is off.
+  
+     Total relaxation zones defined:            2
+  
+ No Pressure damping line found, the feature is off.
+  
+ Found            0  pressure damping zones.
+   Standard Cartesian model employed.
+
+ do initialization...
+ Relaxation zone setup:
+  Zone  1: idx=(     2,    39,     2,    19)
+  Zone  2: idx=(   222,   258,     2,    19)
+   Relaxation zones have been setup.
+      SF solution: k=   1.6067500854798775      ,h=  0.45720000000000000      ,H=   1.4999999999999999E-002 ,T=   2.0000000000000000      ,L=   2.0000000000000000     
+                   kh=  0.73460613908140004      ,c=   1.0000000000000000     
+ The incident wave is a stream function wave with L=0.391049E+01
+  T=0.200000E+01 H=0.150000E-01 u_E=-.308453E-03 and u_S=0.000000E+00
 
 
-for debugging
->> docker build --target debug-stage -t docker_oceanwave .
-
-for accessing the container when debugging
-docker run -it docker_oceanwave /bin/bash
-
-# List running containers to find the container ID or name
-docker ps
-
-# Start an interactive shell session in the container
-# Replace `container_id_or_name` with the actual container ID or name
-docker exec -it docker_oceanwave3d /bin/bash
-
-# If the container does not have Bash, you can try using sh
-docker exec -it container_id_or_name /bin/sh
-
-
-
-docker build --credential-specifier /usr/local/bin/docker-credential-osxkeychain -t docker_oceanwave3d .
-
+ setup ICs...
+ IC chosen is case            3
+ done with ICs
+   Preconditioning: MG-1F(1,1)
+   WARNING: The number of grids is user-defined to be:            5  grids
+            although algorithm suggest that more levels can be used.
+   Multigrid preproccesing...
+   A total of     5 grids will be used:
+     (Nx,Ny,Nz) = (  257,   17,    6)
+     (Nx,Ny,Nz) = (  129,    9,    6)
+     (Nx,Ny,Nz) = (   65,    5,    6)
+     (Nx,Ny,Nz) = (   33,    5,    6)
+     (Nx,Ny,Nz) = (   17,    5,    6)
+ Building stencils...
+   Preconditioning matrix generated.
+ Building stencils...
+   Preconditioning matrix generated.
+ Building stencils...
+   Preconditioning matrix generated.
+ Building stencils...
+   Preconditioning matrix generated.
+ Building stencils...
+   Preconditioning matrix generated.
+ workspaceSize =        15049
+ Multigrid preprocessing step completed.
+ Determine finite difference stencils for the system matrix...
+ Building stencils...
+ ...done!
+   Starting to time step.
+    ITERATIVE SOLVER WORKSPACE SIZE =       551305
+ A total of        8 GMRES iterations done.
+ A total of        4 GMRES iterations done in first time step.
+ An average of     2.00 GMRES iterations done per solve.
+   Minimum no.        1 and maximum no.        1 iterations per solve
+ A total of       12 GMRES iterations done.
+ A total of        4 GMRES iterations done in first time step.
+ An average of     1.50 GMRES iterations done per solve.
+   Minimum no.        1 and maximum no.        1 iterations per solve
+ An average of     2.00 GMRES iterations done per solve excluding first time step iteration counts.
+   Minimum no.        1 and maximum no.        1 iterations per solve excluding first time step solves
+ A total of       16 GMRES iterations done.
 
