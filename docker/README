@@ -11,14 +11,92 @@ The Dockerfile is configured to create a linux image, unpack and compile the abo
 
 >> docker build -t docker_oceanwave3d .
 
+and build with cache clean, e.g. if some code was updated, 
+
+>> docker build --no-cache -t docker_oceanwave3d .
+
+then to see the images
+
+>> docker images
+
+use the repository name or the image id to run a docker container
+
+>> docker run -v /path/to/local/dir:/usr/src/build -it docker_oceanwave3d
+
 Then the image can be run as a container with a bind mount to the directory inside the container
 
 >> docker run -v $(pwd):/target -it docker_oceanwave3d /bin/bash
 
->> docker run -v /path/to/local/dir:/usr/src/build -it docker_oceanwave3d
-
 or without bind mount
 >> docker run -it docker_oceanwave3d
+
+to run the code locally as if it is an executable
+
+(base) Allans-MacBook-Pro-2:docker apek$ code run_oceanwave3d.sh
+(base) Allans-MacBook-Pro-2:docker apek$ chmod +x run_oceanwave.sh
+chmod: run_oceanwave.sh: No such file or directory
+(base) Allans-MacBook-Pro-2:docker apek$ chmod +x run_oceanwave3d.sh
+(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave.sh
+-bash: ./run_oceanwave.sh: No such file or directory
+(base) Allans-MacBook-Pro-2:docker apek$ 
+(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave3d.sh
+
+*********************************************************
+***                                                   ***
+*** OceanWave3D - a coastal engineering tool for      ***
+*** simulation of nonlinear free surface waves.       ***
+*** Copyright (C) 2009 Allan P. Engsig-Karup.         ***
+***                                                   ***
+*** This OceanWave3D program comes with ABSOLUTELY NO ***
+*** WARRANTY. It is distributed under the conditions  ***
+*** of the GNU General Public License version 3.      ***
+***                                                   ***
+***     Software library developed in 2009 by         ***
+***                                                   ***
+***     Allan P. Engsig-Karup                         ***
+***     Guillaume Ducrozet                            ***
+***                                                   ***
+*** At DTU Informatics                                ***
+***    Scientific Computing Section                   ***
+***    Technical University of Denmark                ***
+***                                                   ***
+***     Original software library written in 2007 by  ***
+***                                                   ***
+***     Allan P. Engsig-Karup                         ***
+***     Harry B. Bingham                              ***
+***                                                   ***
+*** At Department of Mechanical Engineering           ***
+***    Coastal, Maritime and Structural Eng. Section  ***
+***    Technical University of Denmark                ***
+***                                                   ***
+*********************************************************
+
+   Input file with model parameters : OceanWave3D.inp                         
+
+   Header title.................... : 
+
+At line 22 of file src/IO/ReadInputFileParameters.f90 (unit = 7, file = 'OceanWave3D.inp')
+Fortran runtime error: Sequential READ or WRITE not allowed after EOF marker, possibly use REWIND or BACKSPACE
+
+Error termination. Backtrace:
+#0  0xffffae3cbeeb
+#1  0xffffae3ccc33
+#2  0xffffae3cd7b3
+#3  0xffffae4c7ee7
+#4  0xaaaab171174b
+#5  0xaaaab17161c3
+#6  0xaaaab1715bd3
+#7  0xaaaab1672b1f
+#8  0xffffae18de0f
+#9  0xaaaab1672b5f
+(base) Allans-MacBook-Pro-2:docker apek$ ./run_oceanwave3d.sh
+
+
+for debugging
+>> docker build --target debug-stage -t docker_oceanwave .
+
+for accessing the container when debugging
+docker run -it docker_oceanwave /bin/bash
 
 # List running containers to find the container ID or name
 docker ps

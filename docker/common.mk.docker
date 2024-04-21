@@ -1,0 +1,41 @@
+# For inclusion in makefile for use with GNU make (gmake)
+# 
+# Purpose: Modify to local configuration by user.
+#
+
+# Program name
+PROGNAME = oceanwave3d
+LIBNAME  = libOceanWave3D.so
+
+# Installation directory
+# INSTALLDIR = $(HOME)/build
+INSTALLDIR = /build
+# $(HOME)/bin
+# LIBINSTALLDIR = $(HOME)/lib
+LIBINSTALLDIR = /usr/lib/
+
+# Build directory where object files are stored 
+# BUILDDIR = $(PWD)/../build
+BUILDDIR = /build
+
+# The build environment is set either by the choice of a compiler 
+# flag, or by creating a block for a specific $USER.  
+# Choose the Fortran compiler on this system
+# E.g. pathf90, f90, gfortran, gf90, ifort
+#FC = gfortran
+#FC = gfortran44
+#FC = gfortran-4.4
+#FC = gf90
+
+USER = docker
+
+# First the blocks based on compiler name:  
+
+ifeq ($(USER),docker)
+  # linux machine
+  FC       = gfortran
+  LIBDIRS  = -L$(LIBINSTALLDIR)
+  LINLIB   = -lharwell -lskit -llapack -lblas
+  DBFLAGS  = -O0 -traceback -check all -warn all
+  OPTFLAGS = -O3
+endif
