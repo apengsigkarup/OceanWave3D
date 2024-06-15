@@ -70,9 +70,20 @@ RUN cp /build/makefile.oceanwave3d makefile # copy
 RUN make # default
 RUN make all # release
 
+# Ensure the binary is placed in the /build directory
+#RUN cp oceanwave3d /build/oceanwave3d
+
 # Set the final working directory
-WORKDIR /build
+#WORKDIR /build
+
+WORKDIR /ocw3d
+#RUN cp /build/oceanwave3d /ocw3d
+RUN cd /ocw3d
+# Command to run when starting the container
+# CMD ["./oceanwave3d"]
+# ENTRYPOINT ["./oceanwave3d"]
+CMD ["/build/oceanwave3d"]
 
 # Command to run when starting the container
 #CMD ["/bin/bash"]
-CMD ["/build/oceanwave3d"]
+#CMD ["/build/oceanwave3d"]
